@@ -1,4 +1,5 @@
-// models/Place.js
+// Create this file at: models/Place.js
+
 const mongoose = require('mongoose');
 
 const placeSchema = new mongoose.Schema({
@@ -8,21 +9,8 @@ const placeSchema = new mongoose.Schema({
     trim: true
   },
   location: {
-    type: {
-      type: String,
-      default: 'Point',
-      enum: ['Point'] // Only allow 'Point' type
-    },
-    coordinates: {
-      lat: {
-        type: Number,
-        required: true
-      },
-      lng: {
-        type: Number,
-        required: true
-      }
-    }
+    type: String,
+    required: true
   },
   description: {
     type: String,
@@ -31,7 +19,15 @@ const placeSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Beach', 'Mountain', 'Cultural', 'Religious', 'Adventure', 'Nature']
+    enum: [
+      'Beach', 'Mountain', 'Cultural', 'Religious', 'Adventure', 'Nature',
+      'Ancient Cities', 'Religious Sites', 'Engineering Marvels', 
+      'Royal Residences', 'Rock Art', 'Prehistoric Sites', 'Sacred Mountains'
+    ]
+  },
+  isPopular: {
+    type: Boolean,
+    default: false
   },
   images: [{
     type: String  // URLs to images
@@ -68,7 +64,12 @@ const placeSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create a compound index for improved search functionality
-placeSchema.index({ name: 'text', description: 'text', category: 'text' });
+// Create text indexes for better search functionality
+placeSchema.index({ 
+  name: 'text', 
+  description: 'text', 
+  location: 'text', 
+  category: 'text' 
+});
 
 module.exports = mongoose.model('Place', placeSchema);
