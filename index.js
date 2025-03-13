@@ -5,6 +5,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const placeRoutes = require('./routes/placeRoutes');
+const tripRoutes = require('./routes/tripRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/places', placeRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // Test route
 app.get('/test', (req, res) => {
@@ -37,4 +41,18 @@ connectDB();
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`API endpoints available at:`);
+  console.log(`- /api/places: Places API`);
+  console.log(`- /api/trips: Trips API`);
+  console.log(`- /api/expenses: Expenses API`);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION! Shutting down...');
+  console.error(err.name, err.message);
+  // Close server & exit process
+  server.close(() => {
+    process.exit(1);
+  });
 });
