@@ -1,4 +1,4 @@
-// Create this file at: models/Place.js
+// models/Place.js
 
 const mongoose = require('mongoose');
 
@@ -19,11 +19,11 @@ const placeSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: [
-      'Beach', 'Mountain', 'Cultural', 'Religious', 'Adventure', 'Nature',
-      'Ancient Cities', 'Religious Sites', 'Engineering Marvels', 
-      'Royal Residences', 'Rock Art', 'Prehistoric Sites', 'Sacred Mountains'
-    ]
+    // Remove enum to allow more flexibility with categories
+    set: function(val) {
+      // Store categories in a standard format (lowercase)
+      return val.toLowerCase();
+    }
   },
   isPopular: {
     type: Boolean,

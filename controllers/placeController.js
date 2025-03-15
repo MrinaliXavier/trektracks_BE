@@ -1,6 +1,7 @@
-// Create this file at: controllers/placeController.js
+// controllers/placeController.js
 
 const Place = require('../models/Place');
+const { normalizeCategory } = require('../src/utils/categoryUtils');
 
 // Get all places
 exports.getAllPlaces = async (req, res) => {
@@ -34,17 +35,23 @@ exports.searchPlaces = async (req, res) => {
     let searchQuery = {};
 
     if (q) {
-      // Use text search for more relevant results
+      // Case-insensitive search for text fields
       searchQuery.$or = [
         { name: { $regex: new RegExp(q, 'i') }},
         { description: { $regex: new RegExp(q, 'i') }},
-        { location: { $regex: new RegExp(q, 'i') }},
-        { category: { $regex: new RegExp(q, 'i') }}
+        { location: { $regex: new RegExp(q, 'i') }}
       ];
     }
 
-    if (category && category !== 'All') {
-      searchQuery.category = category;
+    if (category) {
+      const normalizedCat = normalizeCategory(category);
+      
+      if (normalizedCat === 'all') {
+        // Don't filter by category if 'all' is specified
+      } else {
+        // Use case-insensitive regex for category matching
+        searchQuery.category = { $regex: new RegExp(normalizedCat, 'i') };
+      }
     }
 
     const places = await Place.find(searchQuery);
@@ -100,10 +107,10 @@ exports.createPlace = async (req, res) => {
   }
 };
 
-// Get places by category
+// Get places by category (improved for user-friendliness)
 exports.getPlacesByCategory = async (req, res) => {
   try {
-    const { category } = req.params;
+    let { category } = req.params;
     
     if (!category) {
       return res.status(400).json({
@@ -112,10 +119,14 @@ exports.getPlacesByCategory = async (req, res) => {
       });
     }
 
+    // Normalize the category for better matching
+    const normalizedCat = normalizeCategory(category);
+    
     let query = {};
     
-    if (category !== 'All') {
-      query.category = category;
+    if (normalizedCat !== 'all') {
+      // Use regex for more flexible matching
+      query.category = { $regex: new RegExp(normalizedCat, 'i') };
     }
 
     const places = await Place.find(query);
