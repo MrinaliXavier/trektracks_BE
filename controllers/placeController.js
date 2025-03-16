@@ -126,7 +126,11 @@ exports.getPlacesByCategory = async (req, res) => {
     
     if (normalizedCat !== 'all') {
       // Use regex for more flexible matching
-      query.category = { $regex: new RegExp(normalizedCat, 'i') };
+      query.$or = [
+        { category: { $regex: new RegExp(normalizedCat, 'i') } },
+        { name: { $regex: new RegExp(normalizedCat, 'i') } },
+        { description: { $regex: new RegExp(normalizedCat, 'i') } }
+      ];
     }
 
     const places = await Place.find(query);

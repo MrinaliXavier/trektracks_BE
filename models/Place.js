@@ -17,11 +17,10 @@ const placeSchema = new mongoose.Schema({
     required: true
   },
   category: {
-    type: String,
+    type: Array,
     required: true,
     // Remove enum to allow more flexibility with categories
     set: function(val) {
-      // Store categories in a standard format (lowercase)
       return val.toLowerCase();
     }
   },
