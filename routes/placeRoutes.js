@@ -28,4 +28,13 @@ router.post('/', placeController.createPlace);
 // - GET /api/places/nearby - Get places near user's location
 // - GET /api/places/recommended - Get personalized recommendations
 
+// POST /api/places/:id - update a  place
+router.post('/:id', placeController.updatePlace);
+
+// DELETE /api/places/:id - delete a  place
+router.delete('/:id', placeController.deletePlace);
+
+// POST /api/places/review/:id - Add review to place
+router.post('/review/:id', placeController.addReview);
+
 module.exports = router;

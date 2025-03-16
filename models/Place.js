@@ -6,30 +6,32 @@ const placeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    unique: true,
+    
   },
   location: {
-    type: String,
-    required: true
+    type: Object,//change this after seed change Object --> String
+    required: false
   },
   description: {
     type: String,
     required: true
   },
+  reviews: {
+    type: Array,
+    required: false
+  },
   category: {
     type: Array,
     required: true,
-    // Remove enum to allow more flexibility with categories
-    set: function(val) {
-      return val.toLowerCase();
-    }
   },
   isPopular: {
     type: Boolean,
     default: false
   },
   images: [{
-    type: String  // URLs to images
+    type: String
   }],
   openingHours: {
     open: String,
