@@ -11,6 +11,7 @@ const expenseRoutes = require('./routes/expenseRoutes');
 const authRoutes = require('./routes/authRoutes');
 const aiRoutes = require('./routes/aiRoutes'); 
 const aiPlanRoutes = require('./routes/aiPlanRoutes');
+const geminiRoutes = require('./routes/geminiRoutes');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes); 
 app.use('/api/ai-plan', aiPlanRoutes);
+app.use('/api/gemini', geminiRoutes);
 
 // Test route
 app.get('/test', (req, res) => {
