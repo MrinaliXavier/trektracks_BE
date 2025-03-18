@@ -4,9 +4,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// Import all routes
 const placeRoutes = require('./routes/placeRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.use(express.json());
 app.use('/api/places', placeRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/auth', authRoutes);
 
 // Test route
 app.get('/test', (req, res) => {
@@ -27,7 +30,10 @@ app.get('/test', (req, res) => {
 // Connect to MongoDB with better error handling
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
     console.log('Connected to MongoDB');
   } catch (err) {
     console.error('MongoDB connection error:', err.message);
@@ -39,12 +45,13 @@ connectDB();
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API endpoints available at:`);
   console.log(`- /api/places: Places API`);
   console.log(`- /api/trips: Trips API`);
   console.log(`- /api/expenses: Expenses API`);
+  console.log(`- /api/auth: Authentication API`);
 });
 
 // Handle unhandled promise rejections
