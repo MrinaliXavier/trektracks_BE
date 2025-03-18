@@ -2,19 +2,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');  // Move this up here to avoid using it before initialization
+require('dotenv').config();  // Call dotenv.config()
 
 // for model (abe)
 const axios = require('axios');
-
-dotenv.config(); // Load API key from .env file
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json()); // Allow JSON requests
-
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
@@ -47,18 +45,11 @@ app.post("/api/generate-trip", async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-
-
 // Import all routes
 const placeRoutes = require('./routes/placeRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const authRoutes = require('./routes/authRoutes');
-
 
 // Middleware
 app.use(cors());
@@ -92,7 +83,6 @@ const connectDB = async () => {
 connectDB();
 
 // Start server
-
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API endpoints available at:`);
