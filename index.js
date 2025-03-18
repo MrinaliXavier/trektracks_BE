@@ -4,6 +4,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// for model (abe)
+const axios = require('axios');
+
+const geminiApiKey = process.env.GEMINI_API_KEY;
+
+
 // Import all routes
 const placeRoutes = require('./routes/placeRoutes');
 const tripRoutes = require('./routes/tripRoutes');
