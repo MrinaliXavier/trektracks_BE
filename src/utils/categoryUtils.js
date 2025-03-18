@@ -1,5 +1,5 @@
 // src/utils/categoryUtils.js
-
+const jwt = require('jsonwebtoken');
 /**
  * Normalizes category names for consistent searching
  * Handles plural forms, capitalization, and common variations
@@ -83,3 +83,47 @@ exports.normalizeCategory = (category) => {
     const normalized = exports.normalizeCategory(category);
     return exports.getStandardCategories().includes(normalized) || normalized === 'all';
   };
+
+  exports.getUserfromToken = (req, res, next) => {
+    try {
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ 
+          status: 'error', 
+          message: 'No token provided or invalid format' 
+        });
+      }
+      
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      req.userId = decoded.id;
+      
+      if (next) {
+        return next();
+      }
+      console.log(req.userId)
+      return req.userId;
+    }
+    catch (error) {
+      console.error("Authentication error:", error);
+      
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ 
+          status: 'error', 
+          message: 'Invalid token' 
+        });
+      } else if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ 
+          status: 'error', 
+          message: 'Token expired' 
+        });
+      } else {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Authentication failed'
+        });
+      }
+    }
+  }

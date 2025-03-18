@@ -19,7 +19,7 @@ const placeSchema = new mongoose.Schema({
     required: true
   },
   reviews: {
-    type: Array,
+    type: [String],
     required: false
   },
   category: {

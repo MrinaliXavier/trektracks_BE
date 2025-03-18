@@ -3,16 +3,6 @@
 const mongoose = require('mongoose');
 
 const tripSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    required: false,
-    trim: true
-  },
   startDate: {
     type: Date,
     required: true
@@ -21,38 +11,56 @@ const tripSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  from: {
+    type: String,
+    required: true,
+    trim: true
+  },
   destination: {
     type: String,
     required: true,
     trim: true
   },
-  // Budget information
   budget: {
-    amount: {
-      type: Number,
-      required: false
-    },
-    currency: {
-      type: String,
-      default: 'USD'
-    }
+    type: Number,
+    required: false
   },
-  // Places to visit during the trip
-  places: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Place'
-  }],
+  currency: {
+    type: String,
+    default: 'LKR'
+  },
+  // places: [{
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Place'
+  // }],
   // Additional meta information
+
+  userId: {
+    type: String,
+    ref: 'User'
+  },
   isActive: {
     type: Boolean,
     default: true
   },
   coverImage: {
-    type: String
+    type: String,
+    default: ""
   },
-  // Additional notes or details
+  travelCategory: {
+    type: String,
+  },
+  tripType: {
+    type: String,
+  },
+  vehicle: {
+    type: String,
+  },
   notes: {
     type: String
+  },
+  transactions: {
+    type: Array
   }
 }, {
   timestamps: true

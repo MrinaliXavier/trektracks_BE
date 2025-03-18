@@ -375,12 +375,11 @@ exports.addReview =  async (req, res) => {
       const newReview = req.body.reviews;
       const place = await Place.findById(req.params.id);
 
-      if(place.hasOwnProperty('reviews') && place.reviews.length() > 0){
-        place.reviews.push(newReview)
-      }
-      else{
-        place.reviews = [newReview]
-      }
+    if ( Array.isArray(place.reviews) && place.reviews.length > 0) {
+      place.reviews.push(newReview);  // Use push() instead of add()
+    } else {
+      place.reviews = [newReview];  // Initialize as an array with the new review
+    }
 
 
       const updatedPlace = await Place.findByIdAndUpdate(
