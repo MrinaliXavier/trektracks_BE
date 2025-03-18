@@ -2,54 +2,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');  // Move this up here to avoid using it before initialization
-require('dotenv').config();  // Call dotenv.config()
-
-// for model (abe)
-const axios = require('axios');
-
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-app.use(cors());
-app.use(express.json()); // Allow JSON requests
-
-const geminiApiKey = process.env.GEMINI_API_KEY;
-
-// API Endpoint for Generating Trip Plans
-app.post("/api/generate-trip", async (req, res) => {
-  try {
-    const { destination, days, travelerCategory, tripType, vehicle } = req.body;
-
-    // Construct the AI prompt
-    const prompt = `Plan a ${days}-day trip to ${destination} for a ${travelerCategory}. 
-                    The trip should focus on ${tripType} and use ${vehicle} for travel.`;
-
-    // Send request to Gemini AI
-    const response = await axios.post(
-      "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateText",
-      {
-        prompt: { text: prompt },
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-        params: { key: geminiApiKey },
-      }
-    );
-
-    // Send the AI-generated trip plan to frontend
-    res.json({ tripPlan: response.data });
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    res.status(500).json({ message: "Failed to generate trip plan" });
-  }
-});
+require('dotenv').config();
 
 // Import all routes
 const placeRoutes = require('./routes/placeRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const authRoutes = require('./routes/authRoutes');
+const aiRoutes = require('./routes/aiRoutes'); // Add this line
+
+const app = express();
 
 // Middleware
 app.use(cors());
@@ -60,6 +22,7 @@ app.use('/api/places', placeRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiRoutes); // Add this line
 
 // Test route
 app.get('/test', (req, res) => {
@@ -83,6 +46,7 @@ const connectDB = async () => {
 connectDB();
 
 // Start server
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API endpoints available at:`);
@@ -90,6 +54,7 @@ const server = app.listen(PORT, () => {
   console.log(`- /api/trips: Trips API`);
   console.log(`- /api/expenses: Expenses API`);
   console.log(`- /api/auth: Authentication API`);
+  console.log(`- /api/ai: AI Trip Planning API`); // Add this line
 });
 
 // Handle unhandled promise rejections
