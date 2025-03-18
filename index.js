@@ -7,7 +7,50 @@ require('dotenv').config();
 // for model (abe)
 const axios = require('axios');
 
+dotenv.config(); // Load API key from .env file
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json()); // Allow JSON requests
+
+
 const geminiApiKey = process.env.GEMINI_API_KEY;
+
+// API Endpoint for Generating Trip Plans
+app.post("/api/generate-trip", async (req, res) => {
+  try {
+    const { destination, days, travelerCategory, tripType, vehicle } = req.body;
+
+    // Construct the AI prompt
+    const prompt = `Plan a ${days}-day trip to ${destination} for a ${travelerCategory}. 
+                    The trip should focus on ${tripType} and use ${vehicle} for travel.`;
+
+    // Send request to Gemini AI
+    const response = await axios.post(
+      "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateText",
+      {
+        prompt: { text: prompt },
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        params: { key: geminiApiKey },
+      }
+    );
+
+    // Send the AI-generated trip plan to frontend
+    res.json({ tripPlan: response.data });
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    res.status(500).json({ message: "Failed to generate trip plan" });
+  }
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
 
 
 // Import all routes
@@ -16,7 +59,6 @@ const tripRoutes = require('./routes/tripRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-const app = express();
 
 // Middleware
 app.use(cors());
@@ -50,7 +92,7 @@ const connectDB = async () => {
 connectDB();
 
 // Start server
-const PORT = process.env.PORT || 5000;
+
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API endpoints available at:`);
