@@ -41,7 +41,7 @@ exports.generatePlan = async (req, res) => {
     Format the response as a detailed itinerary with clear headings for each day and provide a total cost estimate.`;
     
     // Initialize the model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
     // Generate content
     const result = await model.generateContent(prompt);
