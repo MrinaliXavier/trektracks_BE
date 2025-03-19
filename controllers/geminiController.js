@@ -1,6 +1,9 @@
 // controllers/geminiController.js
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
+
+// Initialize the Google Generative AI with your API key
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Helper function to construct a prompt for Gemini based on trip details
 const constructTripPrompt = (tripDetails) => {
@@ -47,26 +50,13 @@ exports.generateTravelPlan = async (req, res) => {
     // Construct the prompt
     const prompt = constructTripPrompt(tripDetails);
     
-    // Call Gemini API
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 8192,
-        }
-      }
-    );
-
-    // Extract the generated text from the response
-    const generatedText = response.data.candidates[0].content.parts[0].text;
+    // Use the SDK instead of axios
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    // Generate content
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const generatedText = response.text();
     
     // Return the generated travel plan
     res.status(200).json({
