@@ -1,31 +1,10 @@
-const axios = require('axios');
+// controllers/geminiController.js
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
 require('dotenv').config();
-
-// Helper function to construct a prompt for Gemini based on trip details
-const constructTripPrompt = (tripDetails) => {
-  const {
-    travelerCategory,
-    tripType,
-    destination,
-    from,
-    days,
-    budget,
-    vehicle
-  } = tripDetails;
-
-  return `Create a detailed ${days}-day travel itinerary for a ${travelerCategory} traveling from ${from} to ${destination} in Sri Lanka. 
-This is a ${tripType} focused trip with a budget of ${budget} LKR using ${vehicle} as the primary mode of transportation.
-
-Please include:
-1. Day-by-day breakdown with morning, afternoon, and evening activities
-2. Recommended religious and cultural sites to visit based on the ${tripType} theme
-3. Estimated costs for activities, meals, and transportation
-4. Suggestions for local experiences and food to try
-5. Tips for traveling with ${travelerCategory} in Sri Lanka
-6. How to best utilize ${vehicle} for this journey
-
-Format the response as a detailed itinerary with clear headings for each day and provide a total cost estimate to ensure it stays within the ${budget} LKR budget.`;
-};
 
 // Generate travel plan using Gemini API
 exports.generateTravelPlan = async (req, res) => {
@@ -43,42 +22,56 @@ exports.generateTravelPlan = async (req, res) => {
       }
     }
 
-    // Construct the prompt
-    const prompt = constructTripPrompt(tripDetails);
+    // Initialize Gemini AI
+    const apiKey = process.env.GEMINI_API_KEY;
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash", // Using the model from your code snippet
+    });
     
-    // Call Gemini API
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 8192,
-        }
-      }
-    );
+    const generationConfig = {
+      temperature: 1,
+      topP: 0.95,
+      topK: 40,
+      maxOutputTokens: 8192,
+      responseMimeType: "text/plain",
+    };
 
-    // Debugging: Log the raw response
-    console.log('Gemini API response:', JSON.stringify(response.data, null, 2));
+    // Construct the prompt
+    const prompt = `Create a detailed ${tripDetails.days}-day travel itinerary for a ${tripDetails.travelerCategory} traveling from ${tripDetails.from} to ${tripDetails.destination} in Sri Lanka. 
+This is a ${tripDetails.tripType} focused trip with a budget of ${tripDetails.budget} LKR using ${tripDetails.vehicle} as the primary mode of transportation.
 
-    // Extract the generated text from the response
-    const generatedText = response.data.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") || "No response generated";
+Please include:
+1. Day-by-day breakdown with morning, afternoon, and evening activities
+2. Recommended religious and cultural sites to visit based on the ${tripDetails.tripType} theme
+3. Estimated costs for activities, meals, and transportation
+4. Suggestions for local experiences and food to try
+5. Tips for traveling with ${tripDetails.travelerCategory} in Sri Lanka
+6. How to best utilize ${tripDetails.vehicle} for this journey
 
+Format the response as a detailed itinerary with clear headings for each day and provide a total cost estimate to ensure it stays within the ${tripDetails.budget} LKR budget.`;
+
+    // Start chat session and send message
+    const chatSession = model.startChat({
+      generationConfig,
+      history: [],
+    });
+    
+    const result = await chatSession.sendMessage(prompt);
+    const generatedPlan = result.response.text();
+    
     // Return the generated travel plan
     res.status(200).json({
       status: 'success',
       data: {
-        plan: generatedText
+        plan: generatedPlan
       }
     });
   } catch (error) {
-    console.error('Error generating travel plan:', error.response?.data || error.message);
-
+    console.error('Error generating travel plan:', error);
     res.status(500).json({
       status: 'error',
-      message: error.response?.data?.error?.message || 'Failed to generate travel plan'
+      message: error.message || 'Failed to generate travel plan'
     });
   }
 };
