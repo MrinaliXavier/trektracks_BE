@@ -1,4 +1,3 @@
-// controllers/geminiController.js
 const axios = require('axios');
 require('dotenv').config();
 
@@ -51,11 +50,7 @@ exports.generateTravelPlan = async (req, res) => {
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.7,
           topK: 40,
@@ -65,9 +60,12 @@ exports.generateTravelPlan = async (req, res) => {
       }
     );
 
+    // Debugging: Log the raw response
+    console.log('Gemini API response:', JSON.stringify(response.data, null, 2));
+
     // Extract the generated text from the response
-    const generatedText = response.data.candidates[0].content.parts[0].text;
-    
+    const generatedText = response.data.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") || "No response generated";
+
     // Return the generated travel plan
     res.status(200).json({
       status: 'success',
@@ -76,10 +74,11 @@ exports.generateTravelPlan = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error generating travel plan:', error);
+    console.error('Error generating travel plan:', error.response?.data || error.message);
+
     res.status(500).json({
       status: 'error',
-      message: error.message || 'Failed to generate travel plan'
+      message: error.response?.data?.error?.message || 'Failed to generate travel plan'
     });
   }
 };
