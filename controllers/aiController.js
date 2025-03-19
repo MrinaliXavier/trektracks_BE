@@ -21,7 +21,7 @@ exports.generateTripPlan = async (req, res) => {
     console.log('Generating trip plan with prompt:', prompt);
     
     // Initialize the model (you can choose the appropriate model)
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
     // Generate content
     const result = await model.generateContent(prompt);
@@ -66,7 +66,7 @@ exports.analyzeTrip = async (req, res) => {
     `;
     
     // Initialize the model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
     // Generate content
     const result = await model.generateContent(prompt);
