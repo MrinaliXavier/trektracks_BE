@@ -1,5 +1,3 @@
-// controllers/aiController.js
-
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Initialize the Google Generative AI with your API key
@@ -17,18 +15,21 @@ exports.generateTripPlan = async (req, res) => {
       });
     }
     
-    // For logging/debugging
     console.log('Generating trip plan with prompt:', prompt);
     
-    // Initialize the model (you can choose the appropriate model)
+    // Initialize the model
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
     // Generate content
     const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-    
-    // Return the generated plan
+
+    // Validate response
+    if (!result?.candidates || result.candidates.length === 0) {
+      throw new Error('No response generated from the AI model.');
+    }
+
+    const text = result.candidates[0].content || 'No meaningful response';
+
     return res.status(200).json({
       status: 'success',
       response: text
@@ -55,7 +56,6 @@ exports.analyzeTrip = async (req, res) => {
       });
     }
     
-    // Create a prompt from the trip data and question
     const prompt = `
       Analyze this trip plan and answer the following question:
       
@@ -65,15 +65,17 @@ exports.analyzeTrip = async (req, res) => {
       Question: ${question}
     `;
     
-    // Initialize the model
+    console.log('Analyzing trip with prompt:', prompt);
+    
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    
-    // Generate content
     const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-    
-    // Return the analysis
+
+    if (!result?.candidates || result.candidates.length === 0) {
+      throw new Error('No response generated for trip analysis.');
+    }
+
+    const text = result.candidates[0].content || 'No meaningful response';
+
     return res.status(200).json({
       status: 'success',
       response: text
