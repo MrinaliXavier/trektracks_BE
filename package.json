@@ -107,6 +107,7 @@
     "jwa": "^2.0.0",
     "jwks-rsa": "^3.1.0",
     "jws": "^4.0.0",
+    "jwt-decode": "^4.0.0",
     "kareem": "^2.6.3",
     "limiter": "^1.1.5",
     "lodash.camelcase": "^4.3.0",

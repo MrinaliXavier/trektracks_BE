@@ -7,8 +7,8 @@ const tripController = require('../controllers/tripController');
 // GET /api/trips - Get all trips
 router.get('/', tripController.getAllTrips);
 
-// GET /api/trips/mytrip - Get all trips
-router.get('/mytrip', tripController.getTripforUser);
+// GET /api/trips/:id - Get all trips
+router.get('/mytrip/:id', tripController.getTripforUser);
 
 // GET /api/trips/active - Get active trips
 router.get('/active', tripController.getActiveTrips);

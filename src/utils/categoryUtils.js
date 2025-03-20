@@ -1,5 +1,6 @@
 // src/utils/categoryUtils.js
 const jwt = require('jsonwebtoken');
+
 /**
  * Normalizes category names for consistent searching
  * Handles plural forms, capitalization, and common variations
@@ -84,8 +85,10 @@ exports.normalizeCategory = (category) => {
     return exports.getStandardCategories().includes(normalized) || normalized === 'all';
   };
 
+
   exports.getUserfromToken = (req, res, next) => {
     try {
+      console.log(req.headers.authorization);
       const authHeader = req.headers.authorization;
       
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -96,6 +99,8 @@ exports.normalizeCategory = (category) => {
       }
       
       const token = authHeader.split(' ')[1];
+      console.log(token);
+      
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
       req.userId = decoded.id;
@@ -103,7 +108,6 @@ exports.normalizeCategory = (category) => {
       if (next) {
         return next();
       }
-      console.log(req.userId)
       return req.userId;
     }
     catch (error) {
@@ -126,4 +130,26 @@ exports.normalizeCategory = (category) => {
         });
       }
     }
-  }
+  };
+
+  /**
+   * Decodes a JWT token without verifying signature
+   * Note: This should only be used for non-sensitive operations
+   * 
+   * @param {string} token - JWT token
+   * @returns {Object|null} - Decoded token or null
+   */
+  exports.decodeToken = (token) => {
+    try {
+      // This is a simple decoder that doesn't verify signature
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      
+      const payload = parts[1];
+      const decoded = Buffer.from(payload, 'base64').toString();
+      return JSON.parse(decoded);
+    } catch (error) {
+      console.error("Token decoding error:", error);
+      return null;
+    }
+  };

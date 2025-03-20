@@ -50,8 +50,6 @@ exports.getTrip = async (req, res) => {
 // Create a new trip
 exports.createTrip = async (req, res) => {
   try {
-    const userId = getUserfromToken(req);
-    req.body.userId = userId;
     const newTrip = await Trip.create(req.body);
 
     res.status(201).json({
@@ -68,15 +66,13 @@ exports.createTrip = async (req, res) => {
 
 exports.getTripforUser = async (req, res) => {
   try {
-    console.log(234)
-    const userId = getUserfromToken(req);
+    const userId = req.params.id;
     console.log(userId)
     const tripsForUser = await Trip.find({
       userId: userId,
     });
-    console.log(userId)
     console.log(tripsForUser)
-    res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       data: tripsForUser
     });
