@@ -9,9 +9,6 @@ const placeRoutes = require('./routes/placeRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const authRoutes = require('./routes/authRoutes');
-const aiRoutes = require('./routes/aiRoutes'); 
-const aiPlanRoutes = require('./routes/aiPlanRoutes');
-const geminiRoutes = require('./routes/geminiRoutes');
 
 const app = express();
 
@@ -35,9 +32,6 @@ app.use('/api/places', placeRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/ai', aiRoutes); 
-app.use('/api/ai-plan', aiPlanRoutes);
-app.use('/api/gemini', geminiRoutes);  // Make sure this line is present
 
 // Test route
 app.get('/test', (req, res) => {
@@ -84,9 +78,6 @@ const server = app.listen(PORT, () => {
   console.log(`- /api/trips: Trips API`);
   console.log(`- /api/expenses: Expenses API`);
   console.log(`- /api/auth: Authentication API`);
-  console.log(`- /api/ai: AI Trip Planning API`); 
-  console.log(`- /api/ai-plan: AI Trip Planning API`);
-  console.log(`- /api/gemini: Gemini API for trip planning`);
 });
 
 // Handle unhandled promise rejections
