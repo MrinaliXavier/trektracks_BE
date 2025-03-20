@@ -1,15 +1,23 @@
-// controllers/aiPlanController.js
+// controllers/aiPlanController.js - this file might be missing or misnamed
 const AIPlan = require('../models/AIPlan');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Initialize Google Generative AI with your API key
+// Initialize the Google Generative AI with your API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Generate AI trip plan
 exports.generatePlan = async (req, res) => {
   try {
-    const { destination, days, travelerCategory, tripType, vehicle, budget } = req.body;
+    const { 
+      destination, 
+      days, 
+      travelerCategory, 
+      tripType, 
+      vehicle, 
+      budget 
+    } = req.body;
     
+    // Validate required fields
     if (!destination || !days) {
       return res.status(400).json({
         status: 'error',
@@ -33,31 +41,43 @@ exports.generatePlan = async (req, res) => {
     Format the response as a detailed itinerary with clear headings for each day and provide a total cost estimate.`;
     
     // Initialize the model
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });  // Use 12.0-flash for better results
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
     // Generate content
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }]
-    });
-
-    const text = result.candidates[0]?.content?.parts?.[0]?.text || "No response generated.";
-
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const text = response.text();
+    
     // Save the plan to database
     const aiPlan = new AIPlan({
-      userInput: { destination, days, travelerCategory, tripType, vehicle, budget },
-      generatedPlan: { content: text, createdAt: new Date() },
+      userInput: {
+        destination,
+        days,
+        travelerCategory,
+        tripType,
+        vehicle,
+        budget
+      },
+      generatedPlan: {
+        content: text,
+        createdAt: new Date()
+      },
       rawResponse: text
     });
     
     await aiPlan.save();
     
+    // Return the generated plan
     return res.status(200).json({
       status: 'success',
-      data: { plan: text, planId: aiPlan._id }
+      data: {
+        plan: text,
+        planId: aiPlan._id
+      }
     });
     
   } catch (error) {
-    console.error('Error generating AI plan:', error.response?.data || error);
+    console.error('Error generating AI plan:', error);
     return res.status(500).json({
       status: 'error',
       message: error.message || 'Error generating travel plan'
@@ -69,6 +89,7 @@ exports.generatePlan = async (req, res) => {
 exports.getPlan = async (req, res) => {
   try {
     const planId = req.params.id;
+    
     const plan = await AIPlan.findById(planId);
     
     if (!plan) {
@@ -84,7 +105,7 @@ exports.getPlan = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error retrieving AI plan:', error.response?.data || error);
+    console.error('Error retrieving AI plan:', error);
     return res.status(500).json({
       status: 'error',
       message: error.message || 'Error retrieving travel plan'
