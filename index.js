@@ -16,15 +16,7 @@ const geminiRoutes = require('./routes/geminiRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
-
-// For stricter CORS settings, you could use:
-app.use(cors({
-  origin: ['http://localhost:3000', 'exp://192.168.1.100:19000'], // Add your Expo development URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 
 // Routes
 app.use('/api/places', placeRoutes);
