@@ -67,11 +67,9 @@ exports.createTrip = async (req, res) => {
 exports.getTripforUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log(userId)
     const tripsForUser = await Trip.find({
       userId: userId,
     });
-    console.log(tripsForUser)
     return res.status(200).json({
       status: 'success',
       data: tripsForUser
