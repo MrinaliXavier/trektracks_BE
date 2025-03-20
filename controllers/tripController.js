@@ -116,6 +116,7 @@ exports.updateTrip = async (req, res) => {
 // Delete a trip
 exports.deleteTrip = async (req, res) => {
   try {
+    console.log(req.params.id)
     const trip = await Trip.findById(req.params.id);
     
     if (!trip) {
@@ -125,15 +126,15 @@ exports.deleteTrip = async (req, res) => {
       });
     }
     
-    // Check if trip has any expenses
-    const expensesCount = await Expense.countDocuments({ trip: trip._id });
+    // // Check if trip has any expenses
+    // const expensesCount = await Expense.countDocuments({ trip: trip._id });
     
-    if (expensesCount > 0) {
-      return res.status(400).json({
-        status: 'error',
-        message: `Cannot delete trip with ${expensesCount} expenses. Delete expenses first or update them to remove the trip reference.`
-      });
-    }
+    // if (expensesCount > 0) {
+    //   return res.status(400).json({
+    //     status: 'error',
+    //     message: `Cannot delete trip with ${expensesCount} expenses. Delete expenses first or update them to remove the trip reference.`
+    //   });
+    // }
     
     // Delete the trip
     await Trip.findByIdAndDelete(req.params.id);
@@ -323,6 +324,38 @@ exports.getTripStats = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+};
+
+// Update a trip
+exports.updateTripExpense = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+    
+    if (!trip) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Trip not found'
+      });
+    }
+    
+    const transaction = req.body;
+    const expense = (trip.totalExpense ? trip.totalExpense : 0) + transaction.amount;
+
+    trip.transactions.push(transaction);
+    trip.totalExpense = expense
+    
+    await trip.save();
+    
+    res.status(200).json({
+      status: 'success',
+      data: trip
+    });
+  } catch (error) {
+    res.status(400).json({
       status: 'error',
       message: error.message
     });

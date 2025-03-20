@@ -25,6 +25,9 @@ router.post('/', tripController.createTrip);
 // PATCH /api/trips/:id - Update a trip
 router.patch('/:id', tripController.updateTrip);
 
+// POST /api/trips/expense/:id - Update a trip
+router.post('/expense/:id', tripController.updateTripExpense);
+
 // DELETE /api/trips/:id - Delete a trip
 router.delete('/:id', tripController.deleteTrip);
 

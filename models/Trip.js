@@ -25,6 +25,11 @@ const tripSchema = new mongoose.Schema({
     type: Number,
     required: false
   },
+  totalExpense: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   currency: {
     type: String,
     default: 'LKR'
