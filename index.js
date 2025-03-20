@@ -18,8 +18,6 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-const cors = require('cors');
-
 // Middleware
 app.use(express.json());
 app.use(cors({
