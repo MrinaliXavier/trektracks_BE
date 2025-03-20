@@ -17,6 +17,10 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors({
+  origin: '*',  // Allow all origins (or specify your frontend domain)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+}));
 
 // Routes
 app.use('/api/places', placeRoutes);
