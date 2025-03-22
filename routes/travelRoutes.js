@@ -3,10 +3,7 @@ const express = require('express');
 const router = express.Router();
 const travelController = require('../controllers/travelController');
 
-// POST /api/travel - Process travel form
-router.post('/', travelController.processTravelForm);
-
-// GET /api/travel/:id - Get travel plan by ID
-router.get('/:id', travelController.getTravelPlan);
+// POST /api/travel/:id - Process travel form
+router.post('/:id', travelController.processTravelForm);
 
 module.exports = router;

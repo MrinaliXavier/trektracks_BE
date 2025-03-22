@@ -1,13 +1,16 @@
 // controllers/travelController.js
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Trip = require('../models/Trip');
-
+const { ObjectId } = require('mongodb');
 // Initialize the Google Generative AI with your API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Process travel form and generate AI plan
 exports.processTravelForm = async (req, res) => {
   try {
+    
+    const validId = new ObjectId(req.params.id);
+    console.log(validId)
     const {
       startLocation,
       endLocation,
@@ -17,11 +20,11 @@ exports.processTravelForm = async (req, res) => {
       travelerType,
       tripPreference,
       transportMode,
-      userId
     } = req.body;
 
+    console.log(req.body);
     // Validate required fields
-    if (!startLocation || !endLocation || !startDate || !endDate || !numPersons || !travelerType) {
+    if (!startLocation || !endLocation || !startDate || !endDate  || !travelerType) {
       return res.status(400).json({
         status: 'error',
         message: 'Missing required fields'
@@ -69,31 +72,16 @@ exports.processTravelForm = async (req, res) => {
 
     const result = await chatSession.sendMessage(prompt);
     const aiGeneratedPlan = result.response.text();
+    const trip = await Trip.findById(validId)
+    trip.plan = aiGeneratedPlan;
+    
 
-    // Save trip to database
-    const newTrip = new Trip({
-      from: startLocation,
-      destination: endLocation,
-      startDate: start,
-      endDate: end,
-      budget: 0, // Default budget, can be updated later
-      userId: userId,
-      travelCategory: travelerType,
-      tripType: tripPreference,
-      vehicle: transportMode,
-      notes: aiGeneratedPlan // Store the AI-generated plan in notes
-    });
-
-    await newTrip.save();
+    await trip.save();
 
     // Return success response
     res.status(200).json({
       status: 'success',
-      message: 'Trip created successfully',
-      data: {
-        tripId: newTrip._id,
-        aiGeneratedPlan
-      }
+      message: 'Plan generated & saved successfully',
     });
   } catch (error) {
     console.error('Error processing travel form:', error);
@@ -104,31 +92,3 @@ exports.processTravelForm = async (req, res) => {
   }
 };
 
-// Get AI generated plan for a trip
-exports.getTravelPlan = async (req, res) => {
-  try {
-    const tripId = req.params.id;
-    const trip = await Trip.findById(tripId);
-    
-    if (!trip) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Trip not found'
-      });
-    }
-    
-    res.status(200).json({
-      status: 'success',
-      data: {
-        trip,
-        aiGeneratedPlan: trip.notes
-      }
-    });
-  } catch (error) {
-    console.error('Error retrieving travel plan:', error);
-    res.status(500).json({
-      status: 'error',
-      message: error.message || 'An error occurred while retrieving the travel plan'
-    });
-  }
-};

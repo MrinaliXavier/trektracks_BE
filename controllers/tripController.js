@@ -50,6 +50,14 @@ exports.getTrip = async (req, res) => {
 // Create a new trip
 exports.createTrip = async (req, res) => {
   try {
+
+    // const date = new Date();
+    // const Fromdate = new Date(req.body.startDate);
+    // const Todate = new Date(req.body.endDate);
+    // const from = Fromdate.toISOString().split('T')[0];
+    // const to = Todate.toISOString().split('T')[0];
+    // req.body.startDate = from;
+    // req.body.endDate = to;
     const newTrip = await Trip.create(req.body);
 
     res.status(201).json({

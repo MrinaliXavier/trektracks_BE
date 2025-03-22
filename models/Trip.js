@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 
 const tripSchema = new mongoose.Schema({
   startDate: {
-    type: Date,
+    type: String,
     required: true
   },
   endDate: {
-    type: Date,
+    type: String,
     required: true
   },
   from: {
@@ -66,7 +66,10 @@ const tripSchema = new mongoose.Schema({
   },
   transactions: {
     type: Array
-  }
+  },
+  plan: {
+    type: String
+  },
 }, {
   timestamps: true
 });
