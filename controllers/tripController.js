@@ -4,6 +4,7 @@ const Trip = require('../models/Trip');
 const Expense = require('../models/Expense');
 const { getUserfromToken } = require('../src/utils/categoryUtils');
 const mongoose = require("mongoose");
+const { ObjectId } = require('mongodb');
 
 // Get all trips
 exports.getAllTrips = async (req, res) => {
@@ -364,6 +365,48 @@ exports.updateTripExpense = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+};
+
+
+// Get transactions grouped by category for a specific trip
+exports.getTransactionsByCategory = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Trip not found'
+      });
+    }
+
+    const categoryTotals = {};
+
+    trip.transactions.forEach(transaction => {
+      const { category, amount } = transaction;
+  
+      if (!categoryTotals[category]) {
+        categoryTotals[category] = { category, totalAmount: 0, count: 0 };
+      }
+  
+      categoryTotals[category].totalAmount += amount;
+      categoryTotals[category].count += 1;
+    });
+    
+    categoryTotals.budget = trip.budget;
+    categoryTotals.totalSpent = trip.totalExpense;
+    console.log(categoryTotals);
+    res.status(200).json({
+      status: 'success',
+      results: categoryTotals.length,
+      data: categoryTotals
+    });
+  } catch (error) {
+    res.status(500).json({
       status: 'error',
       message: error.message
     });

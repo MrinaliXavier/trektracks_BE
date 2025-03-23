@@ -29,6 +29,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  favourites: {
+    type:Array
+  },
   createdAt: {
     type: Date,
     default: Date.now

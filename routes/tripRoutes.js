@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const tripController = require('../controllers/tripController');
+const authController = require('../controllers/authController');
 
 // GET /api/trips - Get all trips
 router.get('/', tripController.getAllTrips);
@@ -36,5 +37,8 @@ router.post('/:id/places', tripController.addPlaceToTrip);
 
 // DELETE /api/trips/:id/places/:placeId - Remove a place from a trip
 router.delete('/:id/places/:placeId', tripController.removePlaceFromTrip);
+
+// GET /api/trips/category/:id - Get a specific trip
+router.get('/category/:id', tripController.getTransactionsByCategory);
 
 module.exports = router;

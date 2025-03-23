@@ -34,11 +34,6 @@ const tripSchema = new mongoose.Schema({
     type: String,
     default: 'LKR'
   },
-  // places: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Place'
-  // }],
-  // Additional meta information
 
   userId: {
     type: String,
