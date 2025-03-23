@@ -368,8 +368,6 @@ exports.deletePlace = async (req, res) => {
 
 exports.addReview =  async (req, res) => {
   try{
-    console.log(req.body.reviews)
-    console.log(req.params.id)
 
     if(req.body.reviews){
       const newReview = req.body.reviews;

@@ -125,7 +125,6 @@ exports.updateTrip = async (req, res) => {
 // Delete a trip
 exports.deleteTrip = async (req, res) => {
   try {
-    console.log(req.params.id)
     const trip = await Trip.findById(req.params.id);
     
     if (!trip) {
@@ -399,7 +398,6 @@ exports.getTransactionsByCategory = async (req, res) => {
     
     categoryTotals.budget = trip.budget;
     categoryTotals.totalSpent = trip.totalExpense;
-    console.log(categoryTotals);
     res.status(200).json({
       status: 'success',
       results: categoryTotals.length,

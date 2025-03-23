@@ -168,8 +168,6 @@ exports.getFavourites = async (req, res) => {
     }
 
     if (user.favourites && user.favourites.length > 0) {
-      console.log('Number of favorites:', user.favourites.length);
-      console.log('Favorite IDs:', user.favourites);
 
       const favTrips = [];
       const fetchPromises = user.favourites.map(async (id) => {

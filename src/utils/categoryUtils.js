@@ -88,7 +88,6 @@ exports.normalizeCategory = (category) => {
 
   exports.getUserfromToken = (req, res, next) => {
     try {
-      console.log(req.headers.authorization);
       const authHeader = req.headers.authorization;
       
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -99,7 +98,6 @@ exports.normalizeCategory = (category) => {
       }
       
       const token = authHeader.split(' ')[1];
-      console.log(token);
       
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       

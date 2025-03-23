@@ -10,7 +10,6 @@ exports.processTravelForm = async (req, res) => {
   try {
     
     const validId = new ObjectId(req.params.id);
-    console.log(validId)
     const {
       startLocation,
       endLocation,
@@ -22,7 +21,6 @@ exports.processTravelForm = async (req, res) => {
       transportMode,
     } = req.body;
 
-    console.log(req.body);
     // Validate required fields
     if (!startLocation || !endLocation || !startDate || !endDate  || !travelerType) {
       return res.status(400).json({
